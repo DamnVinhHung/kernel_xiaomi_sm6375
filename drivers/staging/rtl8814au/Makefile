@@ -19,7 +19,7 @@ EXTRA_CFLAGS += -Wno-implicit-fallthrough
 
 EXTRA_CFLAGS += -Wno-date-time
 
-EXTRA_CFLAGS += -I$(src)/include
+EXTRA_CFLAGS += -I$(src)/include -I$(srctree)/$(src)/include
 EXTRA_LDFLAGS += --strip-debug
 
 CONFIG_AUTOCFG_CP = n
@@ -253,10 +253,10 @@ _HAL_INTFS_FILES :=	hal/hal_intf.o \
 			hal/led/hal_$(HCI_NAME)_led.o
 
 
-EXTRA_CFLAGS += -I$(src)/platform
+EXTRA_CFLAGS += -I$(src)/platform -I$(srctree)/$(src)/platform
 _PLATFORM_FILES := platform/platform_ops.o
 
-EXTRA_CFLAGS += -I$(src)/hal/btc
+EXTRA_CFLAGS += -I$(src)/hal/btc -I$(srctree)/$(src)/hal/btc
 
 ########### HAL_RTL8188E #################################
 ifeq ($(CONFIG_RTL8188E), y)
