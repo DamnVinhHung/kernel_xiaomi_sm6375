@@ -1,0 +1,66 @@
+name: Build Image
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    name: ${{ matrix.buildconfig }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        buildconfig: [ build.config.msm.veux ]
+    env:
+      KBUILD_BUILD_USER: "actions"
+      KBUILD_BUILD_HOST: "github.com"
+      BUILD_CONFIG: ${{ matrix.buildconfig }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+
+    - name: Setup dependencies
+      run: |
+        source setup_env.sh
+        installdeps
+
+    - name: Restore ccache
+      id: restore-ccache
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ github.workspace }}/out/.ccache
+        key: ccache-${{ matrix.buildconfig }}-${{ github.run_id }}
+        restore-keys: ccache-${{ matrix.buildconfig }}
+
+    - name: Restore ThinLTO cache
+      id: restore-thinltocache
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ github.workspace }}/out/.thinlto-cache
+        key: thinlto-${{ matrix.buildconfig }}-${{ github.run_id }}
+        restore-keys: thinlto-${{ matrix.buildconfig }}
+
+    - name: Run build
+      run: |
+        source setup_env.sh
+        mcc
+
+    - name: Upload zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.ARTIFACTNAME }}
+        path: "AnyKernel3/"
+
+    - name: Save ccache
+      if: always() && steps.restore-ccache.outputs.cache-hit != 'true'
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ github.workspace }}/out/.ccache
+        key: ccache-${{ matrix.buildconfig }}-${{ github.run_id }}
+
+    - name: Save ThinLTO cache
+      if: always() && steps.restore-thinltocache.outputs.cache-hit != 'true'
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ github.workspace }}/out/.thinlto-cache
+        key: thinlto-${{ matrix.buildconfig }}-${{ github.run_id }}
