@@ -1,0 +1,31 @@
+ARCH=arm64
+FILES="
+.config
+arch/arm64/boot/Image
+arch/arm64/boot/dts/vendor/xiaomi/veux.dtb
+include/config/kernel.release
+include/generated/compile.h
+"
+MAKE_GOALS="
+Image
+dtbs
+"
+LLVM=1
+LLVM_IAS=1
+DEFCONFIG=veux_defconfig
+
+inject_ramdisk() {
+  kconfig -e RD_LZMA \
+  -e INITRAMFS_FORCE \
+  -e INITRAMFS_FORCE_RECOVERY \
+  --set-str INITRAMFS_SOURCE "source/usr/ramdisk.cpio" \
+  -e INITRAMFS_COMPRESSION_LZMA
+}
+copy_ak3() {
+  bash $DIST_DIR/zip.sh clear
+}
+
+#POST_DEFCONFIG_CMDS="inject_ramdisk"
+DIST_DIR=AnyKernel3
+DIST_CMDS="copy_ak3"
+SKIP_CP_KERNEL_HDR=1

@@ -1,0 +1,49 @@
+name: Build
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    name: Bulid Image
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        buildconfig: [ build.config.msm.veux ]
+    env:
+      KBUILD_BUILD_USER: "actions"
+      KBUILD_BUILD_HOST: "github.com"
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+
+    - name: Setup dependencies
+      run: |
+        source setup_env.sh
+        installdeps
+
+    - name: Setup ccache
+      uses: actions/cache@v4
+      with:
+        path: ${{ github.workspace }}/out/.ccache
+        key: ccache-${{ matrix.buildconfig }}-${{ github.run_id }}
+        restore-keys: ccache-${{ matrix.buildconfig }}
+
+    - name: Setup ThinLTO cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ github.workspace }}/out/.thinlto-cache
+        key: thinlto-${{ matrix.buildconfig }}-${{ github.run_id }}
+        restore-keys: thinlto-${{ matrix.buildconfig }}
+    - name: Run build
+      run: |
+        source setup_env.sh
+        BUILD_CONFIG=${{ matrix.buildconfig }} mcc
+
+    - name: Upload zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: AnyKernel3
+        path: "AnyKernel3/"
