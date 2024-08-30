@@ -54,3 +54,6 @@ obj-$(CONFIG_USB_WUSB)		+= wusbcore/
 obj-$(CONFIG_QLGE)		+= qlge/
 obj-$(CONFIG_QCA_CLD_WLAN)	+= qcacld-3.0/
 obj-$(CONFIG_RTL8822BU)		+= rtl88x2bu/
+obj-$(CONFIG_RTL8188EU)		+= rtl8188eus/
+obj-$(CONFIG_88XXAU)		+= rtl8812au/
+obj-$(CONFIG_RTL8814AU)		+= rtl8814au/
