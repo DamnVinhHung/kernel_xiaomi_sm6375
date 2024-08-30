@@ -32,6 +32,7 @@ config NETHUNTER_SUPPORT
 	select BT_HCIBCM203X
 	select BT_HCIBPA10X
 	select BT_HCIBFUSB
+	select BT_QCOMSMD
 	select CFG80211_WEXT
 	select MAC80211
 	select MAC80211_MESH
