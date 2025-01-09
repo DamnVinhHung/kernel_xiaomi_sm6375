@@ -1,0 +1,15 @@
+. build.config.msm.veux
+
+LTO=none
+MAKE_GOALS="${MAKE_GOALS} modules"
+IN_KERNEL_MODULES=1
+ALLOWED_MODULES="QCA_CLD_WLAN"
+
+enablenh() {
+  kconfig -e NETHUNTER_SUPPORT
+  sed -i 's/=m/=y/g' ${OUT_DIR}/.config
+  for mod in ${ALLOWED_MODULES}; do
+    sed -i "s/^CONFIG_${mod}=y/CONFIG_${mod}=m/g" ${OUT_DIR}/.config
+  done
+}
+append_cmd POST_DEFCONFIG_CMDS "enablenh"
