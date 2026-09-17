@@ -16,16 +16,16 @@ jobs:
       run: |
         git clone https://github.com/cachiusa/linux-build-scripts.git build
         ./build/setup/debian.sh
-        sudo apt-get install clang lld
+        sudo apt-get install clang clang-tools libllvm lld
 
-    - name: Restore ccache
+    - name: ccache
       uses: actions/cache@v6
       with:
         path: ${{ github.workspace }}/out/.ccache
         key: ccache-${{ github.run_id }}
         restore-keys: ccache-
 
-    - name: Restore ThinLTO cache
+    - name: ThinLTO cache
       uses: actions/cache@v6
       with:
         path: ${{ github.workspace }}/out/.thinlto-cache
