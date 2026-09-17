@@ -8,7 +8,7 @@ jobs:
     name: Build Image
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 1
 
@@ -16,19 +16,17 @@ jobs:
       run: |
         git clone https://github.com/cachiusa/linux-build-scripts.git build
         ./build/setup/debian.sh
-        sudo apt-get install llvm
+        sudo apt-get install clang lld
 
     - name: Restore ccache
-      id: restore-ccache
-      uses: actions/cache/restore@v4
+      uses: actions/cache@v6
       with:
         path: ${{ github.workspace }}/out/.ccache
         key: ccache-${{ github.run_id }}
         restore-keys: ccache-
 
     - name: Restore ThinLTO cache
-      id: restore-thinltocache
-      uses: actions/cache/restore@v4
+      uses: actions/cache@v6
       with:
         path: ${{ github.workspace }}/out/.thinlto-cache
         key: thinlto-${{ github.run_id }}
@@ -36,6 +34,9 @@ jobs:
 
     - name: Run build
       run: |
+        ccache --set-config=cache_dir="$(pwd)/out/.ccache"
+        ccache --set-config=max_size=2G
+        ccache --set-config=compression=false
         time BUILD_CONFIG=build/DEVICE.veux.config ./build/build.sh -j2
 
     # - name: Upload zip
@@ -43,17 +44,3 @@ jobs:
     #   with:
     #     name: ${{ env.ARTIFACTNAME }}
     #     path: "AnyKernel3/"
-
-    - name: Save ccache
-      if: always() && steps.restore-ccache.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v4
-      with:
-        path: ${{ github.workspace }}/out/.ccache
-        key: ccache-${{ github.run_id }}
-
-    - name: Save ThinLTO cache
-      if: always() && steps.restore-thinltocache.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v4
-      with:
-        path: ${{ github.workspace }}/out/.thinlto-cache
-        key: thinlto-${{ github.run_id }}
