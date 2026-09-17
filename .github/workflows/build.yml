@@ -1,6 +1,7 @@
 name: Build Image
 on:
 - workflow_dispatch
+- push
 
 jobs:
   build:
@@ -11,10 +12,10 @@ jobs:
       with:
         fetch-depth: 1
 
-    # - name: Setup dependencies
-    #   run: |
-    #     source setup_env.sh
-    #     installdeps
+    - name: Setup dependencies
+      run: |
+        git clone https://github.com/cachiusa/linux-build-scripts.git build
+        ./build/setup/debian.sh
 
     - name: Restore ccache
       id: restore-ccache
@@ -34,7 +35,6 @@ jobs:
 
     - name: Run build
       run: |
-        git clone https://github.com/cachiusa/linux-build-scripts.git build
         time BUILD_CONFIG=build/DEVICE.veux.config ./build/build.sh -j2
 
     # - name: Upload zip
