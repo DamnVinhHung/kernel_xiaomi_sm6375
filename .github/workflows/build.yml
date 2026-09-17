@@ -16,6 +16,7 @@ jobs:
       run: |
         git clone https://github.com/cachiusa/linux-build-scripts.git build
         ./build/setup/debian.sh
+        sudo apt-get install llvm
 
     - name: Restore ccache
       id: restore-ccache
@@ -45,14 +46,14 @@ jobs:
 
     - name: Save ccache
       if: always() && steps.restore-ccache.outputs.cache-hit != 'true'
-      uses: actions/cache/restore@v4
+      uses: actions/cache/save@v4
       with:
         path: ${{ github.workspace }}/out/.ccache
         key: ccache-${{ github.run_id }}
 
     - name: Save ThinLTO cache
       if: always() && steps.restore-thinltocache.outputs.cache-hit != 'true'
-      uses: actions/cache/restore@v4
+      uses: actions/cache/save@v4
       with:
         path: ${{ github.workspace }}/out/.thinlto-cache
         key: thinlto-${{ github.run_id }}
