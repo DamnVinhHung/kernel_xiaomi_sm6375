@@ -11,10 +11,10 @@ jobs:
       with:
         fetch-depth: 1
 
-    - name: Setup dependencies
-      run: |
-        source setup_env.sh
-        installdeps
+    # - name: Setup dependencies
+    #   run: |
+    #     source setup_env.sh
+    #     installdeps
 
     - name: Restore ccache
       id: restore-ccache
