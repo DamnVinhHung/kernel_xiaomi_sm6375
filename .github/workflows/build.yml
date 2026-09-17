@@ -16,7 +16,7 @@ jobs:
       run: |
         git clone https://github.com/cachiusa/linux-build-scripts.git build
         ./build/setup/debian.sh
-        sudo apt-get install clang clang-tools libllvm lld
+        sudo apt-get install clang clang-tools llvm lld
 
     - name: ccache
       uses: actions/cache@v6
